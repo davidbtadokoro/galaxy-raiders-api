@@ -1,4 +1,3 @@
-@file:Suppress("UNUSED_PARAMETER") // <- REMOVE
 package galaxyraiders.core.physics
 
 data class Point2D(val x: Double, val y: Double) {
@@ -35,6 +34,9 @@ data class Point2D(val x: Double, val y: Double) {
   }
 
   fun distance(p: Point2D): Double {
-    return Math.sqrt((this.x - p.x) * (this.x - p.x) + (this.y - p.y) * (this.y - p.y))
+    val deltaX: Double = this.x - p.x
+    val deltaY: Double = this.y - p.y
+
+    return Math.sqrt(Math.pow(deltaX, 2.0) + Math.pow(deltaY, 2.0))
   }
 }

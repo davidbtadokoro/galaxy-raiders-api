@@ -6,6 +6,7 @@ import galaxyraiders.helpers.AverageValueGeneratorStub
 import galaxyraiders.helpers.DELTA
 import galaxyraiders.helpers.getMinMaxAverageValueGeneratorStubs
 import galaxyraiders.helpers.toStreamOfArguments
+import galaxyraiders.helpers.listPoints
 import galaxyraiders.ports.RandomGenerator
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -66,6 +67,15 @@ class SpaceFieldTest {
       "SpaceField should initialize an empty list of missiles",
       { assertNotNull(spaceField.missiles) },
       { assertEquals(0, spaceField.missiles.size) },
+    )
+  }
+
+  @Test
+  fun `it starts with no explosions`() {
+    assertAll(
+      "SpaceField should initialize an empty list of missiles",
+      { assertNotNull(spaceField.explosions) },
+      { assertEquals(0, spaceField.explosions.size) },
     )
   }
 
@@ -184,6 +194,44 @@ class SpaceFieldTest {
     )
   }
 
+  @Test
+  fun `it can generate a new explosion`() {
+    val numExplosions = spaceField.explosions.size
+    spaceField.generateExplosion(Point2D(1.0, 1.0))
+
+    assertEquals(numExplosions + 1, spaceField.explosions.size)
+  }
+
+  @ParameterizedTest(name = "({0})")
+  @MethodSource("providePointArguments")
+  fun `it does not have any hanging explosions after triggering it`(pointOfExplosion: Point2D) {
+    var numUntriggeredExplosions: Int = 0
+
+    // Tests to see if there is only one untriggered explosion hanging
+    // after generating one
+    spaceField.generateExplosion(pointOfExplosion)
+    for (explosion in spaceField.explosions) {
+      if (!explosion.is_triggered) {
+        numUntriggeredExplosions++
+      }
+    }
+    assertTrue(numUntriggeredExplosions <= 1)
+
+    // Tests to see if there is no more hanging explosions after triggering
+    numUntriggeredExplosions = 0
+    spaceField.explosions.last().explosionTriggered()
+    for (explosion in spaceField.explosions) {
+      if (!explosion.is_triggered) {
+        numUntriggeredExplosions++
+      }
+    }
+    assertEquals(0, numUntriggeredExplosions)
+
+    assertAll(
+
+    )
+  }
+
   private companion object {
     @JvmStatic
     fun provideSpaceFieldWithCornerCaseGeneratorArguments(): Stream<Arguments> {
@@ -191,6 +239,11 @@ class SpaceFieldTest {
           generator ->
         SpaceField(width = 12, height = 8, generator = generator)
       }).toStreamOfArguments()
+    }
+
+    @JvmStatic
+    fun providePointArguments(): Stream<Arguments> {
+      return listPoints().toStreamOfArguments()
     }
   }
 }

@@ -90,7 +90,22 @@ class GameEngine(
     this.field.spaceObjects.forEachPair {
         (first, second) ->
       if (first.impacts(second)) {
-        first.collideWith(second, GameEngineConfig.coefficientRestitution)
+
+        /* ---------------------------- EP ---------------------------- */
+
+        if (first.type == "Missile" && second.type == "Asteroid") {
+          this.field.generateExplosion(second.center)
+          println("EXPLOSION (${second.center})") // Debug print (REMOVE)
+        }
+        else if (first.type == "Asteroid" && second.type == "Missile") {
+          this.field.generateExplosion(first.center)
+          println("EXPLOSION (${first.center})") // Debug print (REMOVE)
+        }
+        else {
+          first.collideWith(second, GameEngineConfig.coefficientRestitution)
+        }
+        /* ---------------------------- EP ---------------------------- */
+
       }
     }
   }

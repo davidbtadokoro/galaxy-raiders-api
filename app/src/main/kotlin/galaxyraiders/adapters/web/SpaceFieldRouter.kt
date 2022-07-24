@@ -37,20 +37,23 @@ class SpaceFieldRouter : Router, Visualizer {
 
     var pendingExplosions: List<Explosion> = emptyList()
 
+    /* Here we determine which explosions (probably just one)
+     * should be sent to the front-end and therefore rendered.
+     */
     for (explosion in field.explosions) {
-      if (!explosion.is_triggered) {
-        pendingExplosions += explosion
-        explosion.explosionTriggered()
+      if (!explosion.is_triggered) { // found pending explosion to be rendered
+        pendingExplosions += explosion // adds it to the list to be sent
+        explosion.explosionTriggered() // marks it to not be picked again
       }
     }
-
-    /* ---------------------------- EP ---------------------------- */
 
     this.dto = SpaceFieldDTO(
       ship = field.ship,
       asteroids = field.asteroids,
       missiles = field.missiles,
-      explosions = pendingExplosions,
+      explosions = pendingExplosions, // we send just the pending explosionss
     )
+
+    /* ---------------------------- EP ---------------------------- */
   }
 }
